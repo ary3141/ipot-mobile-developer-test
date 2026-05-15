@@ -20,7 +20,12 @@ import {
 import CategoryChip from "@/src/components/CategoryChip";
 import MenuItemCard from "@/src/components/MenuItemCard";
 
+import { mockMenu } from "@/src/data/mockMenu";
+
 export default function MenuScreen() {
+
+    const categories = [{ id: 0, name: "All" }, ...mockMenu.categories];
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -29,11 +34,11 @@ export default function MenuScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.restaurantName}>
-              Sushi Zen 
+              {mockMenu.restaurant.name}
             </Text>
 
             <Text style={styles.tableText}>
-              Table T001
+              Table {mockMenu.restaurant.table_id}
             </Text>
           </View>
         </View>
@@ -49,10 +54,13 @@ export default function MenuScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoriesContainer}
         >
-            <CategoryChip label="All" isActive />
-            <CategoryChip label="Appetizers" />
-            <CategoryChip label="Main Course" />
-            <CategoryChip label="Drinks" />
+            {categories.map((category, index) => (
+                <CategoryChip
+                    key={category.id}
+                    label={category.name}
+                    isActive={index === 0}
+                />
+            ))}
         </ScrollView>
 
         <Text style={styles.sectionTitle}>
@@ -60,23 +68,14 @@ export default function MenuScreen() {
         </Text>
 
         <View style={styles.cardsContainer}>
-        <MenuItemCard
-            name="Chicken Ramen"
-            description="Rich broth with egg and noodles"
-            price="$14.99"
-        />
-
-        <MenuItemCard
-            name="Salmon Sashimi"
-            description="Fresh Norwegian salmon, 8 pieces"
-            price="$16.99"
-        />
-
-        <MenuItemCard
-            name="Green Tea"
-            description="Hot Japanese green tea"
-            price="$3.50"
-        />
+            {mockMenu.items.map((item) => (
+                <MenuItemCard
+                    key={item.id}
+                    name={item.name}
+                    description={item.description}
+                    price={`$${item.price.toFixed(2)}`}
+                />
+            ))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -124,77 +123,10 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
 
-  activeCategory: {
-    backgroundColor: "#F97316",
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.lg,
-  },
-
-  activeCategoryText: {
-    color: colors.white,
-    fontWeight: "600",
-  },
-
-  category: {
-    backgroundColor: colors.white,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-
-  categoryText: {
-    color: colors.primary,
-    fontWeight: "500",
-  },
-
   sectionTitle: {
     marginTop: spacing.xl,
     marginHorizontal: spacing.lg,
     fontSize: typography.heading,
-    fontWeight: "700",
-    color: colors.primary,
-  },
-
-  foodCard: {
-    flexDirection: "row",
-    marginTop: spacing.md,
-    marginHorizontal: spacing.lg,
-    backgroundColor: colors.white,
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-
-  foodImage: {
-    width: 80,
-    height: 80,
-    borderRadius: radius.md,
-    backgroundColor: "#D1D5DB",
-  },
-
-  foodInfo: {
-    flex: 1,
-    marginLeft: spacing.md,
-    justifyContent: "space-between",
-  },
-
-  foodName: {
-    fontSize: typography.body,
-    fontWeight: "700",
-    color: colors.primary,
-  },
-
-  foodDescription: {
-    fontSize: typography.caption,
-    color: colors.secondary,
-  },
-
-  foodPrice: {
-    fontSize: typography.body,
     fontWeight: "700",
     color: colors.primary,
   },
