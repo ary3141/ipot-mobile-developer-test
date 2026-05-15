@@ -17,6 +17,10 @@ import {
 
 import { useCartStore } from "@/src/state/cartStore";
 
+import { createOrder } from "@/src/api/orderApi";
+import { router } from "expo-router";
+import { useState } from "react";
+
 export default function CartScreen() {
   const items = useCartStore((state) => state.items);
 
@@ -30,6 +34,28 @@ export default function CartScreen() {
     (state) => state.getSubtotal()
   );
 
+  const clearCart = useCartStore((state) => state.clearCart);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitOrder = async () => {
+    try {
+        setIsSubmitting(true);
+
+        const response = await createOrder();
+
+        clearCart();
+
+        router.push({
+        pathname: "/confirmation",
+        params: {
+            orderId: response.orderId,
+            estimatedMinutes: String(response.estimatedMinutes),
+        },
+        } as any);
+    } finally {
+        setIsSubmitting(false);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -99,9 +125,13 @@ export default function CartScreen() {
           </Text>
         </View>
 
-        <Pressable style={styles.checkoutButton}>
+        <Pressable 
+          style={styles.checkoutButton}
+          onPress={handleSubmitOrder}
+          disabled={items.length === 0 || isSubmitting}
+        >
           <Text style={styles.checkoutButtonText}>
-            Submit Order
+            {isSubmitting ? "Submitting..." : "Submit Order"}
           </Text>
         </Pressable>
       </View>
