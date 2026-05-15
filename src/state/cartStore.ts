@@ -8,7 +8,8 @@ type CartStore = {
     addItem: (
         menuItem: MenuItem,
         selectedCustomizations?: CartItem["selectedCustomizations"],
-        note?: string
+        note?: string,
+        quantity?: number
     ) => void;
     getTotalItems: () => number;
     getSubtotal: () => number;
@@ -23,7 +24,9 @@ export const useCartStore = create<CartStore>((set, get) => ({
     addItem: (
         menuItem,
         selectedCustomizations = [],
-        note = ""
+        note = "",
+        quantity = 1
+
     ) => {
         const currentItems = get().items;
 
@@ -37,7 +40,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
         const cartItemId =
             `${menuItem.id}-${customizationKey}-${noteKey}`;
 
-       const existingItem = currentItems.find(
+        const existingItem = currentItems.find(
             (item) => item.id === cartItemId
         );
         if (existingItem) {
@@ -46,7 +49,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
                     item.id === cartItemId
                         ? {
                             ...item,
-                            quantity: item.quantity + 1,
+                            quantity: item.quantity + quantity,
                         }
                         : item
                 ),
@@ -63,7 +66,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
                     menuItem,
                     selectedCustomizations,
                     note,
-                    quantity: 1,
+                    quantity,
                 },
             ],
         });

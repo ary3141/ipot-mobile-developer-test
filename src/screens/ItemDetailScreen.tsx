@@ -3,6 +3,8 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
+    KeyboardAvoidingView,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -75,113 +77,119 @@ export default function ItemDetailScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView
-                contentContainerStyle={styles.content}
-                showsVerticalScrollIndicator={false}
+            <KeyboardAvoidingView
+                style={styles.keyboardView}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
-                <View style={styles.imageContainer}>
-                    <Text style={styles.emojiStyle}>
-                        {getMenuItemEmoji(item.name)}
-                    </Text>
-                </View>
-
-                <Text style={styles.name}>
-                    {item.name}
-                </Text>
-
-                <Text style={styles.description}>
-                    {item.description}
-                </Text>
-
-                <Text style={styles.price}>
-                    ${item.price.toFixed(2)}
-                </Text>
-
-                {item.customization_groups.map((group) => (
-                    <View key={group.id} style={styles.customizationGroup}>
-                        <Text style={styles.groupTitle}>
-                            {group.name}
-                            {group.required ? " *" : ""}
-                        </Text>
-
-                        {group.options.map((option) => {
-                            const isSelected = selectedCustomizations.some(
-                                (customization) => customization.option.id === option.id
-                            );
-
-                            return (
-                                <Pressable
-                                    key={option.id}
-                                    style={[
-                                        styles.optionRow,
-                                        isSelected && styles.selectedOptionRow,
-                                    ]}
-                                    onPress={() =>
-                                        handleSelectCustomization(
-                                            group.id,
-                                            group.name,
-                                            option
-                                        )
-                                    }
-                                >
-                                    <Text style={styles.optionText}>
-                                        {option.name}
-                                    </Text>
-
-                                    <Text style={styles.optionPrice}>
-                                        +${option.price_modifier.toFixed(2)}
-                                    </Text>
-                                </Pressable>
-                            );
-                        })}
-                    </View>
-                ))}
-
-                <View style={styles.quantityRow}>
-                    <Text style={styles.groupTitle}>Quantity</Text>
-
-                    <View style={styles.quantityControl}>
-                        <Pressable
-                            style={styles.quantityButton}
-                            onPress={() => setQuantity(Math.max(1, quantity - 1))}
-                        >
-                            <Text style={styles.quantityButtonText}>-</Text>
-                        </Pressable>
-
-                        <Text style={styles.quantityText}>{quantity}</Text>
-
-                        <Pressable
-                            style={styles.quantityButton}
-                            onPress={() => setQuantity(quantity + 1)}
-                        >
-                            <Text style={styles.quantityButtonText}>+</Text>
-                        </Pressable>
-                    </View>
-                </View>
-
-                <Text style={styles.groupTitle}>Special Instructions</Text>
-
-                <TextInput
-                    style={styles.noteInput}
-                    placeholder="Add a note, e.g. no onion, extra sauce..."
-                    placeholderTextColor={colors.secondary}
-                    value={note}
-                    onChangeText={setNote}
-                    multiline
-                />
-
-                <Pressable
-                    style={styles.addButton}
-                    onPress={() => {
-                        addItem(item, selectedCustomizations, note);
-                        router.replace("/cart" as any);
-                    }}
+                <ScrollView
+                    contentContainerStyle={styles.content}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
                 >
-                    <Text style={styles.addButtonText}>
-                        Add to Cart • ${totalPrice.toFixed(2)}
+                    <View style={styles.imageContainer}>
+                        <Text style={styles.emojiStyle}>
+                            {getMenuItemEmoji(item.name)}
+                        </Text>
+                    </View>
+
+                    <Text style={styles.name}>
+                        {item.name}
                     </Text>
-                </Pressable>
-            </ScrollView>
+
+                    <Text style={styles.description}>
+                        {item.description}
+                    </Text>
+
+                    <Text style={styles.price}>
+                        ${item.price.toFixed(2)}
+                    </Text>
+
+                    {item.customization_groups.map((group) => (
+                        <View key={group.id} style={styles.customizationGroup}>
+                            <Text style={styles.groupTitle}>
+                                {group.name}
+                                {group.required ? " *" : ""}
+                            </Text>
+
+                            {group.options.map((option) => {
+                                const isSelected = selectedCustomizations.some(
+                                    (customization) => customization.option.id === option.id
+                                );
+
+                                return (
+                                    <Pressable
+                                        key={option.id}
+                                        style={[
+                                            styles.optionRow,
+                                            isSelected && styles.selectedOptionRow,
+                                        ]}
+                                        onPress={() =>
+                                            handleSelectCustomization(
+                                                group.id,
+                                                group.name,
+                                                option
+                                            )
+                                        }
+                                    >
+                                        <Text style={styles.optionText}>
+                                            {option.name}
+                                        </Text>
+
+                                        <Text style={styles.optionPrice}>
+                                            +${option.price_modifier.toFixed(2)}
+                                        </Text>
+                                    </Pressable>
+                                );
+                            })}
+                        </View>
+                    ))}
+
+                    <View style={styles.quantityRow}>
+                        <Text style={styles.groupTitle}>Quantity</Text>
+
+                        <View style={styles.quantityControl}>
+                            <Pressable
+                                style={styles.quantityButton}
+                                onPress={() => setQuantity(Math.max(1, quantity - 1))}
+                            >
+                                <Text style={styles.quantityButtonText}>-</Text>
+                            </Pressable>
+
+                            <Text style={styles.quantityText}>{quantity}</Text>
+
+                            <Pressable
+                                style={styles.quantityButton}
+                                onPress={() => setQuantity(quantity + 1)}
+                            >
+                                <Text style={styles.quantityButtonText}>+</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+
+                    <Text style={styles.groupTitle}>Special Instructions</Text>
+
+                    <TextInput
+                        style={styles.noteInput}
+                        placeholder="Add a note, e.g. no onion, extra sauce..."
+                        placeholderTextColor={colors.secondary}
+                        value={note}
+                        onChangeText={setNote}
+                        multiline
+                    />
+
+                    <Pressable
+                        style={styles.addButton}
+                        onPress={() => {
+                            addItem(item, selectedCustomizations, note, quantity);
+                            router.replace("/cart" as any);
+                        }}
+                    >
+                        <Text style={styles.addButtonText}>
+                            Add to Cart • ${totalPrice.toFixed(2)}
+                        </Text>
+                    </Pressable>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
@@ -332,5 +340,8 @@ const styles = StyleSheet.create({
     },
     emojiStyle: {
         fontSize: 112,
+    },
+    keyboardView: {
+        flex: 1,
     },
 });

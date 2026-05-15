@@ -134,7 +134,12 @@ export default function CartScreen() {
                             <Pressable
                                 style={styles.quantityButton}
                                 onPress={() =>
-                                    addItem(item.menuItem, item.selectedCustomizations)
+                                    addItem(
+                                        item.menuItem,
+                                        item.selectedCustomizations,
+                                        item.note,
+                                        1
+                                    )
                                 }
                             >
                                 <Text style={styles.quantityButtonText}>
