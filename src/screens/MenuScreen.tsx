@@ -23,17 +23,30 @@ import {
 import CategoryChip from "@/src/components/CategoryChip";
 import MenuItemCard from "@/src/components/MenuItemCard";
 
-import { mockMenu } from "@/src/data/mockMenu";
-import { useState } from "react";
-
+// import { mockMenu } from "@/src/data/mockMenu";
+// import { useState } from "react";
+import { getMenu } from "@/src/api/menuApi";
+import { MenuResponse } from "@/src/models/menu";
 import { useCartStore } from "@/src/state/cartStore";
+import { useEffect, useState } from "react";
 
 export default function MenuScreen() {
-    
+    const [menu, setMenu] = useState<MenuResponse | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchText, setSearchText] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState(0);
 
-    const filteredItems = mockMenu.items.filter((item) => {
+    useEffect(() => {
+        async function loadMenu() {
+            const response = await getMenu("T001");
+
+            setMenu(response);
+            setIsLoading(false);
+        }
+
+        loadMenu();
+    }, []);
+    const filteredItems = (menu?.items ?? []).filter((item) => {
         const keyword = searchText.toLowerCase();
 
         const matchesSearch =
@@ -46,12 +59,23 @@ export default function MenuScreen() {
         return matchesSearch && matchesCategory;
     });
 
-    const categories = [{ id: 0, name: "All" }, ...mockMenu.categories];
+    const categories = [{ id: 0, name: "All" }, ...menu?.categories ?? []];
 
     const addItem = useCartStore((state) => state.addItem);
     const totalItems = useCartStore((state) => state.getTotalItems());
     const subtotal = useCartStore((state) => state.getSubtotal());
 
+    if (isLoading) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.loadingContainer}>
+                    <Text style={styles.loadingText}>
+                        Loading menu...
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -60,11 +84,11 @@ export default function MenuScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.restaurantName}>
-              {mockMenu.restaurant.name}
+              {menu?.restaurant.name}
             </Text>
 
             <Text style={styles.tableText}>
-              Table {mockMenu.restaurant.table_id}
+              Table {menu?.restaurant.table_id}
             </Text>
           </View>
         </View>
@@ -191,4 +215,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  loadingText: {
+    fontSize: typography.body,
+    color: colors.secondary,
+  },
 });
