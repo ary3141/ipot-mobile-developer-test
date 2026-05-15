@@ -1,50 +1,102 @@
-# Welcome to your Expo app 👋
+# IPOT Mobile Developer Test
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile food ordering application built with Expo React Native.
 
-## Get started
+## Features
 
-1. Install dependencies
+- QR table scanning
+- Restaurant menu browsing
+- Category filtering & search
+- Item detail screen
+- Food customization
+- Special instructions / notes
+- Dynamic cart management
+- Order tracking timeline
+- Zustand state management
+- Mocked API integration
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+# Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+- Expo
+- React Native
+- Expo Router
+- Zustand
+- TypeScript
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+# Project Structure
 
 ```bash
-npm run reset-project
+src/
+ ├── api/          Mocked API layer
+ ├── components/   Reusable UI components
+ ├── constants/    Theme & styling constants
+ ├── data/         Mocked data
+ ├── models/       TypeScript models
+ ├── screens/      Screen components
+ ├── state/        Zustand store
+ └── utils/        Helper utilities
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+# How to Run
 
-To learn more about developing your project with Expo, look at the following resources:
+## Install dependencies
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm install
+```
 
-## Join the community
+## Start development server
 
-Join our community of developers creating universal apps.
+```bash
+npx expo start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Then run using:
+
+- iOS Simulator
+- Android Emulator
+- Expo Go
+
+---
+
+# Testing
+
+```bash
+npm test
+```
+
+---
+
+# Architecture Notes
+
+This project uses a mocked local API layer (`menuApi.ts`, `orderApi.ts`) to simulate backend integration without requiring a live server.
+
+Navigation is handled using Expo Router with file-based routing.
+
+State management is handled using Zustand.
+
+---
+
+# Main User Flow
+
+1. Scan restaurant table QR
+2. Connect to restaurant table
+3. Browse menu
+4. Customize food item
+5. Add to cart
+6. Submit order
+7. Track order status
+
+---
+
+# Notes
+
+- This project was optimized for clean architecture and UI/UX polish.
+- Menu images are represented using emoji-based placeholders.
+- Order tracking currently uses mocked timeline progression.

@@ -30,4 +30,37 @@ describe("cartStore", () => {
         expect(useCartStore.getState().items[0].quantity).toBe(2);
         expect(useCartStore.getState().getSubtotal()).toBeCloseTo(29.98);
     });
+    it("creates separate cart items for different customizations", () => {
+        useCartStore.getState().addItem(
+            ramen,
+            [
+                {
+                    groupId: 1,
+                    groupName: "Spice",
+                    option: {
+                        id: 1,
+                        name: "Mild",
+                        price_modifier: 0,
+                    },
+                },
+            ]
+        );
+
+        useCartStore.getState().addItem(
+            ramen,
+            [
+                {
+                    groupId: 1,
+                    groupName: "Spice",
+                    option: {
+                        id: 2,
+                        name: "Spicy",
+                        price_modifier: 1,
+                    },
+                },
+            ]
+        );
+
+        expect(useCartStore.getState().items).toHaveLength(2);
+    });
 });
