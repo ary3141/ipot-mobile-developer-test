@@ -76,7 +76,6 @@ Current test coverage includes:
 
 Run tests with:
 
-```md
 ```bash
 npm test
 ```
