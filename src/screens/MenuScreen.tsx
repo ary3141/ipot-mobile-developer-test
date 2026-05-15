@@ -5,6 +5,7 @@ import {
 import { router } from "expo-router";
 
 import {
+    Modal,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -20,13 +21,15 @@ import {
     typography,
 } from "@/src/constants/theme";
 
+
 import CategoryChip from "@/src/components/CategoryChip";
 import MenuItemCard from "@/src/components/MenuItemCard";
 
-// import { mockMenu } from "@/src/data/mockMenu";
-// import { useState } from "react";
+import { SelectedCustomization } from "@/src/models/cart";
+import { CustomizationOption, MenuItem, MenuResponse } from "@/src/models/menu";
+
 import { getMenu } from "@/src/api/menuApi";
-import { MenuResponse } from "@/src/models/menu";
+// import { MenuResponse } from "@/src/models/menu";
 import { useCartStore } from "@/src/state/cartStore";
 import { useEffect, useState } from "react";
 
@@ -35,7 +38,8 @@ export default function MenuScreen() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchText, setSearchText] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState(0);
-
+    const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+    const [selectedCustomizations, setSelectedCustomizations] = useState<SelectedCustomization[]>([]);
     useEffect(() => {
         async function loadMenu() {
             const response = await getMenu("T001");
@@ -46,6 +50,44 @@ export default function MenuScreen() {
 
         loadMenu();
     }, []);
+    const handleAddPress = (item: MenuItem) => {
+  if (item.customization_groups.length === 0) {
+    addItem(item);
+    return;
+  }
+
+  setSelectedItem(item);
+  setSelectedCustomizations([]);
+};
+
+const handleSelectCustomization = (
+  groupId: number,
+  groupName: string,
+  option: CustomizationOption
+) => {
+  setSelectedCustomizations((current) => {
+    const withoutSameGroup = current.filter(
+      (item) => item.groupId !== groupId
+    );
+
+    return [
+      ...withoutSameGroup,
+      {
+        groupId,
+        groupName,
+        option,
+      },
+    ];
+  });
+};
+
+const handleConfirmCustomization = () => {
+  if (!selectedItem) return;
+
+  addItem(selectedItem, selectedCustomizations);
+  setSelectedItem(null);
+  setSelectedCustomizations([]);
+};
     const filteredItems = (menu?.items ?? []).filter((item) => {
         const keyword = searchText.toLowerCase();
 
@@ -127,7 +169,7 @@ export default function MenuScreen() {
                     name={item.name}
                     description={item.description}
                     price={`$${item.price.toFixed(2)}`}
-                    onAddPress={() => addItem(item)}
+                    onAddPress={() => handleAddPress(item)}
                 />
             ))}
         </View>
@@ -143,6 +185,81 @@ export default function MenuScreen() {
 
         </Pressable>
       )}
+    <Modal
+  visible={selectedItem !== null}
+  animationType="slide"
+  transparent
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>
+        {selectedItem?.name}
+      </Text>
+
+      <Text style={styles.modalSubtitle}>
+        Choose your preferences
+      </Text>
+
+      {selectedItem?.customization_groups.map((group) => (
+        <View key={group.id} style={styles.customizationGroup}>
+          <Text style={styles.groupTitle}>
+            {group.name}
+            {group.required ? " *" : ""}
+          </Text>
+
+          {group.options.map((option) => {
+            const isSelected = selectedCustomizations.some(
+              (item) => item.option.id === option.id
+            );
+
+            return (
+              <Pressable
+                key={option.id}
+                style={[
+                  styles.optionRow,
+                  isSelected && styles.selectedOptionRow,
+                ]}
+                onPress={() =>
+                  handleSelectCustomization(
+                    group.id,
+                    group.name,
+                    option
+                  )
+                }
+              >
+                <Text style={styles.optionText}>
+                  {option.name}
+                </Text>
+
+                <Text style={styles.optionPrice}>
+                  +${option.price_modifier.toFixed(2)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ))}
+
+      <Pressable
+        style={styles.confirmButton}
+        onPress={handleConfirmCustomization}
+      >
+        <Text style={styles.confirmButtonText}>
+          Add to Cart
+        </Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.cancelButton}
+        onPress={() => setSelectedItem(null)}
+      >
+        <Text style={styles.cancelButtonText}>
+          Cancel
+        </Text>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
     </SafeAreaView>
   );
 }
@@ -225,4 +342,90 @@ const styles = StyleSheet.create({
     fontSize: typography.body,
     color: colors.secondary,
   },
+  modalOverlay: {
+  flex: 1,
+  justifyContent: "flex-end",
+  backgroundColor: "rgba(0,0,0,0.4)",
+},
+
+modalContent: {
+  backgroundColor: colors.white,
+  padding: spacing.lg,
+  borderTopLeftRadius: radius.lg,
+  borderTopRightRadius: radius.lg,
+},
+
+modalTitle: {
+  fontSize: typography.heading,
+  fontWeight: "700",
+  color: colors.primary,
+},
+
+modalSubtitle: {
+  marginTop: spacing.xs,
+  fontSize: typography.caption,
+  color: colors.secondary,
+},
+
+customizationGroup: {
+  marginTop: spacing.lg,
+},
+
+groupTitle: {
+  fontSize: typography.body,
+  fontWeight: "700",
+  color: colors.primary,
+  marginBottom: spacing.sm,
+},
+
+optionRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  padding: spacing.md,
+  borderRadius: radius.md,
+  borderWidth: 1,
+  borderColor: colors.border,
+  marginBottom: spacing.sm,
+},
+
+selectedOptionRow: {
+  borderColor: "#F97316",
+  backgroundColor: "#FFF7ED",
+},
+
+optionText: {
+  fontSize: typography.body,
+  color: colors.primary,
+},
+
+optionPrice: {
+  fontSize: typography.caption,
+  color: colors.secondary,
+},
+
+confirmButton: {
+  marginTop: spacing.md,
+  backgroundColor: "#F97316",
+  paddingVertical: spacing.md,
+  borderRadius: radius.md,
+  alignItems: "center",
+},
+
+confirmButtonText: {
+  color: colors.white,
+  fontSize: typography.body,
+  fontWeight: "700",
+},
+
+cancelButton: {
+  marginTop: spacing.sm,
+  paddingVertical: spacing.md,
+  alignItems: "center",
+},
+
+cancelButtonText: {
+  color: colors.secondary,
+  fontSize: typography.body,
+  fontWeight: "600",
+},
 });
