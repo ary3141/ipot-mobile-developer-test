@@ -80,6 +80,13 @@ Run tests with:
 ```bash
 npm test
 ```
+
+# Test QR
+
+Use this QR code to test the app:
+
+<img src="assets/images/qr-code.png" width="220" />
+
 ---
 
 # Architecture Notes
