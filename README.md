@@ -65,12 +65,21 @@ Then run using:
 
 ---
 
-# Testing
+# Tests
 
+The project includes unit tests for Zustand cart state management.
+
+Current test coverage includes:
+- adding items to cart
+- increasing quantity for duplicate items
+- handling customized cart items separately
+
+Run tests with:
+
+```md
 ```bash
 npm test
 ```
-
 ---
 
 # Architecture Notes
@@ -94,9 +103,16 @@ State management is handled using Zustand.
 7. Track order status
 
 ---
+# Demo
 
+A demo recording of the application can be found here:
+
+[Demo Video](https://youtube.com/shorts/bnvlXjBy47Y)
+
+---
 # Notes
 
 - This project was optimized for clean architecture and UI/UX polish.
 - Menu images are represented using emoji-based placeholders.
 - Order tracking currently uses mocked timeline progression.
+- No environment variables are required because the app currently uses mocked local API data.
