@@ -5,11 +5,13 @@ import { colors, radius, spacing } from "@/src/constants/theme";
 type CategoryChipProps = {
   label: string;
   isActive?: boolean;
+  onPress?: () => void;
 };
 
 export default function CategoryChip({
   label,
   isActive = false,
+  onPress,
 }: CategoryChipProps) {
   return (
     <Pressable
@@ -17,6 +19,7 @@ export default function CategoryChip({
         styles.container,
         isActive && styles.activeContainer,
       ]}
+      onPress={onPress}
     >
       <Text
         style={[

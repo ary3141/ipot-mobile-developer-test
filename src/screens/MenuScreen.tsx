@@ -21,8 +21,25 @@ import CategoryChip from "@/src/components/CategoryChip";
 import MenuItemCard from "@/src/components/MenuItemCard";
 
 import { mockMenu } from "@/src/data/mockMenu";
+import { useState } from "react";
 
 export default function MenuScreen() {
+    
+    const [searchText, setSearchText] = useState("");
+    const [selectedCategoryId, setSelectedCategoryId] = useState(0);
+
+    const filteredItems = mockMenu.items.filter((item) => {
+        const keyword = searchText.toLowerCase();
+
+        const matchesSearch =
+            item.name.toLowerCase().includes(keyword) ||
+            item.description.toLowerCase().includes(keyword);
+
+        const matchesCategory =
+            selectedCategoryId === 0 || item.category_id === selectedCategoryId;
+
+        return matchesSearch && matchesCategory;
+    });
 
     const categories = [{ id: 0, name: "All" }, ...mockMenu.categories];
 
@@ -44,9 +61,11 @@ export default function MenuScreen() {
         </View>
 
         <TextInput
-          placeholder="Search menu items..."
-          placeholderTextColor={colors.secondary}
-          style={styles.searchInput}
+            placeholder="Search menu items..."
+            placeholderTextColor={colors.secondary}
+            style={styles.searchInput}
+            value={searchText}
+            onChangeText={setSearchText}
         />
 
         <ScrollView
@@ -58,7 +77,8 @@ export default function MenuScreen() {
                 <CategoryChip
                     key={category.id}
                     label={category.name}
-                    isActive={index === 0}
+                    isActive={selectedCategoryId === category.id}
+                    onPress={() => setSelectedCategoryId(category.id)}
                 />
             ))}
         </ScrollView>
@@ -68,7 +88,7 @@ export default function MenuScreen() {
         </Text>
 
         <View style={styles.cardsContainer}>
-            {mockMenu.items.map((item) => (
+            {filteredItems.map((item) => (
                 <MenuItemCard
                     key={item.id}
                     name={item.name}
