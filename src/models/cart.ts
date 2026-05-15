@@ -11,6 +11,7 @@ export type CartItem = {
     menuItem: MenuItem;
     quantity: number;
     selectedCustomizations?: SelectedCustomization[];
+    note?: string;
 };
 
 export type CartState = {

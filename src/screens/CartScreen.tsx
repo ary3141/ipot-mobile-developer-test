@@ -108,6 +108,11 @@ export default function CartScreen() {
                                         : ""}
                                 </Text>
                             ))}
+                            {item.note && item.note.trim().length > 0 && (
+                                <Text style={styles.noteText}>
+                                    Note: {item.note}
+                                </Text>
+                            )}
                         </View>
 
                         <View style={styles.quantityContainer}>
@@ -303,5 +308,11 @@ const styles = StyleSheet.create({
         fontSize: typography.body,
         color: colors.secondary,
         textAlign: "center",
+    },
+    noteText: {
+        marginTop: spacing.xs,
+        fontSize: typography.caption,
+        color: "#F97316",
+        fontWeight: "600",
     },
 });
