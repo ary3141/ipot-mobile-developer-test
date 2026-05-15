@@ -6,12 +6,14 @@ type MenuItemCardProps = {
   name: string;
   description: string;
   price: string;
+  onAddPress: () => void;
 };
 
 export default function MenuItemCard({
   name,
   description,
   price,
+  onAddPress,
 }: MenuItemCardProps) {
   return (
     <View style={styles.container}>
@@ -23,7 +25,7 @@ export default function MenuItemCard({
         <Text style={styles.price}>{price}</Text>
       </View>
 
-      <Pressable style={styles.addButton}>
+      <Pressable style={styles.addButton} onPress={onAddPress}>
         <Text style={styles.addButtonText}>+</Text>
       </Pressable>
     </View>

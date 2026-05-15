@@ -2,7 +2,10 @@ import {
     SafeAreaView,
 } from "react-native-safe-area-context";
 
+import { router } from "expo-router";
+
 import {
+    Pressable,
     ScrollView,
     StyleSheet,
     Text,
@@ -23,6 +26,8 @@ import MenuItemCard from "@/src/components/MenuItemCard";
 import { mockMenu } from "@/src/data/mockMenu";
 import { useState } from "react";
 
+import { useCartStore } from "@/src/state/cartStore";
+
 export default function MenuScreen() {
     
     const [searchText, setSearchText] = useState("");
@@ -42,6 +47,10 @@ export default function MenuScreen() {
     });
 
     const categories = [{ id: 0, name: "All" }, ...mockMenu.categories];
+
+    const addItem = useCartStore((state) => state.addItem);
+    const totalItems = useCartStore((state) => state.getTotalItems());
+    const subtotal = useCartStore((state) => state.getSubtotal());
 
   return (
     <SafeAreaView style={styles.container}>
@@ -94,10 +103,22 @@ export default function MenuScreen() {
                     name={item.name}
                     description={item.description}
                     price={`$${item.price.toFixed(2)}`}
+                    onAddPress={() => addItem(item)}
                 />
             ))}
         </View>
       </ScrollView>
+      {totalItems > 0 && (
+        <Pressable
+            style={styles.cartButton}
+            onPress={() => router.push("/cart" as any)}
+        >
+            <Text style={styles.cartButtonText}>
+               View Cart • {totalItems} item{totalItems > 1 ? "s" : ""} • ${subtotal.toFixed(2)}
+            </Text>
+
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 }
@@ -152,6 +173,22 @@ const styles = StyleSheet.create({
   },
 
   cardsContainer: {
-  marginHorizontal: spacing.lg,
+    marginHorizontal: spacing.lg,
   },
+
+  cartButton: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+    alignItems: "center",
+  },
+
+  cartButtonText: {
+    color: colors.white,
+    fontSize: typography.body,
+    fontWeight: "700",
+  },
+
 });
