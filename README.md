@@ -1,4 +1,4 @@
-# IPOT Mobile Developer Test
+# Restaurant Ordering App (React Native)
 
 A mobile food ordering application built with Expo React Native.
 
